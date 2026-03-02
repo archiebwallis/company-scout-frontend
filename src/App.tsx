@@ -11,6 +11,7 @@ import ConfigEditor from "./pages/ConfigEditor";
 import RunDetail from "./pages/RunDetail";
 import CompanyDetail from "./pages/CompanyDetail";
 import Visualization from "./pages/Visualization";
+import PortfolioView from "./pages/PortfolioView";
 import Runs from "./pages/Runs";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/runs/:id" element={<RunDetail />} />
             <Route path="/runs/:id/companies/:companyId" element={<CompanyDetail />} />
             <Route path="/runs/:id/visualize" element={<Visualization />} />
+            <Route path="/runs/:id/portfolio" element={<PortfolioView />} />
             <Route path="/configs" element={<ScoringConfigs />} />
             <Route path="/configs/new" element={<ConfigEditor />} />
             <Route path="/configs/:id" element={<ConfigEditor />} />

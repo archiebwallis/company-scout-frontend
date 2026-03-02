@@ -24,6 +24,7 @@ export interface CriterionScore {
   score: number;
   reasoning: string;
   confidence: 'high' | 'medium' | 'low';
+  dataFound?: boolean;
 }
 
 export interface CompanyResult {
@@ -33,6 +34,9 @@ export interface CompanyResult {
   criterionScores: CriterionScore[];
   researchReport: string;
   sources: string[];
+  logoDomain?: string | null;
+  dataAvailability?: 'full' | 'partial' | 'limited' | null;
+  dataCoveragePct?: number | null;
 }
 
 export interface Run {

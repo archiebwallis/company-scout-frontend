@@ -1,11 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Download, BarChart3, Search, ArrowUpDown, Loader2 } from 'lucide-react';
+import { Download, BarChart3, LayoutGrid, Search, ArrowUpDown, Loader2 } from 'lucide-react';
 import { useRun } from '@/lib/api';
 import { useConfigs } from '@/lib/api';
 import { getMaxScore } from '@/lib/mock-data';
 import { ScoreBadge } from '@/components/ScoreBadge';
 import { StatusBadge } from '@/components/StatusBadge';
+import { CompanyLogo } from '@/components/CompanyLogo';
+import { DataAvailabilityBadge } from '@/components/DataAvailabilityBadge';
+import { DataFoundIndicator } from '@/components/DataFoundIndicator';
 import { Progress } from '@/components/ui/progress';
 
 export default function RunDetail() {
@@ -66,6 +69,9 @@ export default function RunDetail() {
           <p className="text-sm text-muted-foreground">{run.configName} · {run.date}</p>
         </div>
         <div className="flex gap-2">
+          <Link to={`/runs/${run.id}/portfolio`} className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
+            <LayoutGrid className="h-4 w-4" /> Portfolio View
+          </Link>
           <Link to={`/runs/${run.id}/visualize`} className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-muted transition-colors">
             <BarChart3 className="h-4 w-4" /> Visualize
           </Link>
@@ -115,11 +121,20 @@ export default function RunDetail() {
             {filteredCompanies.map(company => (
               <tr key={company.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3">
-                  <Link to={`/runs/${run.id}/companies/${company.id}`} className="text-primary hover:underline font-medium whitespace-nowrap">{company.name}</Link>
+                  <div className="flex items-center gap-2">
+                    <CompanyLogo name={company.name} logoDomain={company.logoDomain} size="sm" />
+                    <Link to={`/runs/${run.id}/companies/${company.id}`} className="text-primary hover:underline font-medium whitespace-nowrap">{company.name}</Link>
+                    <DataAvailabilityBadge availability={company.dataAvailability} />
+                  </div>
                 </td>
                 <td className="px-4 py-3"><ScoreBadge score={company.totalScore} maxScore={maxScore} /></td>
                 {company.criterionScores.map(cs => (
-                  <td key={cs.criterionId} className="px-4 py-3"><ScoreBadge score={cs.score} maxScore={maxScore} /></td>
+                  <td key={cs.criterionId} className="px-4 py-3">
+                    <div className="inline-flex items-center">
+                      <ScoreBadge score={cs.score} maxScore={maxScore} />
+                      <DataFoundIndicator dataFound={cs.dataFound} confidence={cs.confidence} />
+                    </div>
+                  </td>
                 ))}
               </tr>
             ))}

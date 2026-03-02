@@ -62,6 +62,11 @@ export default {
           mid: "hsl(var(--score-mid))",
           low: "hsl(var(--score-low))",
         },
+        tier: {
+          gold: "hsl(var(--tier-gold))",
+          silver: "hsl(var(--tier-silver))",
+          bronze: "hsl(var(--tier-bronze))",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",

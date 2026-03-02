@@ -4,6 +4,8 @@ import { ArrowLeft, ExternalLink, Loader2 } from 'lucide-react';
 import { useRun, useConfigs } from '@/lib/api';
 import { getMaxScore, getScoreLevel } from '@/lib/mock-data';
 import { ScoreBadge } from '@/components/ScoreBadge';
+import { CompanyLogo } from '@/components/CompanyLogo';
+import { DataAvailabilityBadge } from '@/components/DataAvailabilityBadge';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 
@@ -40,8 +42,10 @@ export default function CompanyDetail() {
       </Link>
 
       <div className="flex items-center gap-4 mb-8">
+        <CompanyLogo name={company.name} logoDomain={company.logoDomain} size="lg" />
         <h1 className="text-2xl font-bold">{company.name}</h1>
         <ScoreBadge score={company.totalScore} maxScore={maxScore} size="lg" />
+        <DataAvailabilityBadge availability={company.dataAvailability} size="md" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 mb-6">
@@ -83,6 +87,11 @@ export default function CompanyDetail() {
                 )}>
                   {cs.confidence} confidence
                 </span>
+                {cs.dataFound === false && (
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-score-low/10 text-score-low ml-1">
+                    no data
+                  </span>
+                )}
               </div>
             </div>
           );
