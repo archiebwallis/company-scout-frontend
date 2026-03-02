@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Plus, Trash2, ArrowUp, ArrowDown, Loader2 } from 'lucide-react';
-import { useConfig, useCreateConfig, useUpdateConfig } from '@/lib/api';
+import { Plus, Trash2, ArrowUp, ArrowDown, Loader2, Sparkles, PenLine } from 'lucide-react';
+import { useConfig, useCreateConfig, useUpdateConfig, useGenerateCriteria } from '@/lib/api';
 import type { Criterion } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,12 @@ export default function ConfigEditor() {
   ]);
   const [evaluationPrompt, setEvaluationPrompt] = useState('');
   const [initialized, setInitialized] = useState(false);
+
+  // AI generation state
+  const [mode, setMode] = useState<'manual' | 'generate'>('manual');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiScale, setAiScale] = useState('1-10');
+  const generateCriteria = useGenerateCriteria();
 
   useEffect(() => {
     if (existing && !initialized) {
@@ -60,6 +66,21 @@ export default function ConfigEditor() {
     setCriteria(updated);
   };
 
+  const handleGenerate = async () => {
+    if (!aiPrompt.trim()) return;
+    try {
+      const result = await generateCriteria.mutateAsync({ prompt: aiPrompt, scale: aiScale });
+      setName(result.name);
+      setDescription(result.description);
+      setScale(aiScale);
+      setCriteria(result.criteria);
+      setEvaluationPrompt(result.evaluationPrompt);
+      setMode('manual');
+    } catch (err) {
+      console.error('Failed to generate criteria:', err);
+    }
+  };
+
   const handleSave = async () => {
     const payload = {
       name,
@@ -94,6 +115,64 @@ export default function ConfigEditor() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Config' : 'New Config'}</h1>
+
+      {!isEditing && (
+        <div className="flex gap-1 mb-6 p-1 rounded-lg bg-muted/50 w-fit">
+          <button
+            onClick={() => setMode('manual')}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+              mode === 'manual' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <PenLine className="h-3.5 w-3.5" /> Manual
+          </button>
+          <button
+            onClick={() => setMode('generate')}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+              mode === 'generate' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <Sparkles className="h-3.5 w-3.5" /> Generate with AI
+          </button>
+        </div>
+      )}
+
+      {mode === 'generate' && !isEditing && (
+        <div className="rounded-lg border border-border bg-card p-6 mb-6">
+          <h2 className="text-sm font-medium mb-1">Describe your scoring framework</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Paste a prompt describing what you want to evaluate. The AI will extract criteria with weightings, descriptions, and research guidance.
+          </p>
+          <textarea
+            value={aiPrompt}
+            onChange={e => setAiPrompt(e.target.value)}
+            placeholder="e.g., Evaluate portfolio companies on their digital transformation readiness, focusing on cloud adoption, AI/ML capabilities, data infrastructure maturity..."
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground min-h-[160px] resize-none focus:outline-none focus:ring-2 focus:ring-ring mb-4"
+          />
+          <div className="flex items-end gap-3">
+            <div>
+              <label className="text-xs font-medium mb-1 block text-muted-foreground">Scoring Scale</label>
+              <select value={aiScale} onChange={e => setAiScale(e.target.value)} className="rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground">
+                <option value="1-5">1-5</option>
+                <option value="1-10">1-10</option>
+                <option value="1-100">1-100</option>
+              </select>
+            </div>
+            <Button onClick={handleGenerate} disabled={generateCriteria.isPending || !aiPrompt.trim()}>
+              {generateCriteria.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Analyzing prompt...</>
+              ) : (
+                <><Sparkles className="h-4 w-4 mr-2" /> Generate Criteria</>
+              )}
+            </Button>
+          </div>
+          {generateCriteria.isError && (
+            <p className="text-sm text-score-low mt-3">Failed to generate criteria. Please try again.</p>
+          )}
+        </div>
+      )}
 
       <div className="space-y-6">
         <div>

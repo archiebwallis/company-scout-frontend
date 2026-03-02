@@ -85,6 +85,24 @@ export function useUpdateConfig(id: string) {
   });
 }
 
+interface GenerateCriteriaResponse {
+  name: string;
+  description: string;
+  criteria: Criterion[];
+  evaluationPrompt: string;
+}
+
+export function useGenerateCriteria() {
+  return useMutation({
+    mutationFn: (params: { prompt: string; scale: string }) =>
+      apiFetch<GenerateCriteriaResponse>('/api/configs/generate-criteria', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      }),
+  });
+}
+
 export function useDeleteConfig() {
   const qc = useQueryClient();
   return useMutation({
