@@ -23,7 +23,7 @@ export function CompanyLogo({ name, logoDomain, size = 'sm', className }: Compan
     .toUpperCase();
 
   const logoUrl = logoDomain
-    ? `https://logo.clearbit.com/${logoDomain}`
+    ? `https://www.google.com/s2/favicons?domain=${logoDomain}&sz=128`
     : null;
 
   return (

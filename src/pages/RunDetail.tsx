@@ -58,6 +58,28 @@ export default function RunDetail() {
 
   const progress = run.companyCount > 0 ? (run.companiesScored / run.companyCount) * 100 : 0;
 
+  const handleExportCsv = () => {
+    if (!run || !config) return;
+    const headers = ['Company', 'Total Score', ...config.criteria.map(c => c.name)];
+    const rows = filteredCompanies.map(company => {
+      const criterionValues = config.criteria.map(c => {
+        const cs = company.criterionScores.find(s => s.criterionId === c.id);
+        return cs ? String(cs.score) : '';
+      });
+      return [company.name, String(company.totalScore), ...criterionValues];
+    });
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${run.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-scores.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <div className="flex items-start justify-between mb-6">
@@ -75,7 +97,7 @@ export default function RunDetail() {
           <Link to={`/runs/${run.id}/visualize`} className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-muted transition-colors">
             <BarChart3 className="h-4 w-4" /> Visualize
           </Link>
-          <button className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-muted transition-colors">
+          <button onClick={handleExportCsv} className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-sm font-medium hover:bg-muted transition-colors">
             <Download className="h-4 w-4" /> Export CSV
           </button>
         </div>
