@@ -103,6 +103,29 @@ export function useGenerateCriteria() {
   });
 }
 
+export interface PortfolioCompany {
+  name: string;
+  sector: string;
+  description: string;
+}
+
+interface ScrapePortfolioResponse {
+  firmName: string;
+  companies: PortfolioCompany[];
+  notes: string;
+}
+
+export function useScrapePortfolio() {
+  return useMutation({
+    mutationFn: (params: { firmName: string }) =>
+      apiFetch<ScrapePortfolioResponse>('/api/scrape-portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      }),
+  });
+}
+
 export function useDeleteConfig() {
   const qc = useQueryClient();
   return useMutation({
