@@ -176,6 +176,7 @@ interface CreateRunParams {
   file: File;
   name: string;
   configId: string;
+  peFirmName?: string;
 }
 
 export function useCreateRun() {
@@ -186,6 +187,9 @@ export function useCreateRun() {
       form.append('file', params.file);
       form.append('name', params.name);
       form.append('config_id', params.configId);
+      if (params.peFirmName) {
+        form.append('pe_firm_name', params.peFirmName);
+      }
       const res = await fetch(`${API_BASE}/api/runs`, {
         method: 'POST',
         body: form,
@@ -199,6 +203,33 @@ export function useCreateRun() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['runs'] });
       qc.invalidateQueries({ queryKey: ['stats'] });
+      qc.invalidateQueries({ queryKey: ['firms'] });
     },
+  });
+}
+
+// ── PE Firms ──────────────────────────────────────────────────────────
+
+export interface FirmSummary {
+  firmName: string;
+  runCount: number;
+  totalCompanies: number;
+  averageScore: number;
+  latestRunDate: string;
+}
+
+export function useFirms() {
+  return useQuery<FirmSummary[]>({
+    queryKey: ['firms'],
+    queryFn: () => apiFetch('/api/firms'),
+  });
+}
+
+export function useFirmRuns(firmName: string | undefined) {
+  return useQuery<RunListItem[]>({
+    queryKey: ['firm-runs', firmName],
+    queryFn: () => apiFetch(`/api/firms/${encodeURIComponent(firmName!)}/runs`),
+    enabled: !!firmName,
+    refetchInterval: 5000,
   });
 }

@@ -99,6 +99,7 @@ export default function NewRun() {
         file: csvFile,
         name: runName,
         configId: selectedConfigId,
+        peFirmName: inputMode === 'scrape' && firmName.trim() ? firmName.trim() : undefined,
       });
       navigate(`/runs/${result.id}`);
     } catch (err) {

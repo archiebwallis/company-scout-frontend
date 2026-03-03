@@ -4,13 +4,45 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 interface DataAvailabilityBadgeProps {
   availability: 'full' | 'partial' | 'limited' | null | undefined;
+  coveragePct?: number | null;
   size?: 'sm' | 'md';
 }
 
-export function DataAvailabilityBadge({ availability, size = 'sm' }: DataAvailabilityBadgeProps) {
-  if (!availability || availability === 'full') return null;
-
+export function DataAvailabilityBadge({ availability, coveragePct, size = 'sm' }: DataAvailabilityBadgeProps) {
   const iconSize = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
+
+  // If we have a coverage percentage, show it as a color-coded pill
+  if (coveragePct != null && coveragePct > 0) {
+    const colorClass = coveragePct >= 80
+      ? 'text-score-high'
+      : coveragePct >= 40
+        ? 'text-score-mid'
+        : 'text-score-low';
+
+    const label = coveragePct >= 80
+      ? 'Good data coverage — comprehensive evidence found'
+      : coveragePct >= 40
+        ? 'Partial data coverage — some criteria had limited evidence'
+        : 'Low data coverage — scores may not reflect reality';
+
+    const Icon = coveragePct < 40 ? AlertTriangle : coveragePct < 80 ? CircleAlert : null;
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn('inline-flex items-center gap-1 shrink-0', colorClass)}>
+            {Icon && <Icon className={iconSize} />}
+            <span className={cn(textSize, 'font-medium')}>{coveragePct}%</span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top">{label}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  // Fallback: icon-only for old data without coveragePct
+  if (!availability || availability === 'full') return null;
 
   const config = {
     partial: {

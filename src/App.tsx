@@ -13,6 +13,8 @@ import CompanyDetail from "./pages/CompanyDetail";
 import Visualization from "./pages/Visualization";
 import PortfolioView from "./pages/PortfolioView";
 import Runs from "./pages/Runs";
+import Firms from "./pages/Firms";
+import FirmDetail from "./pages/FirmDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const App = () => (
             <Route path="/runs/:id/companies/:companyId" element={<CompanyDetail />} />
             <Route path="/runs/:id/visualize" element={<Visualization />} />
             <Route path="/runs/:id/portfolio" element={<PortfolioView />} />
+            <Route path="/firms" element={<Firms />} />
+            <Route path="/firms/:firmName" element={<FirmDetail />} />
             <Route path="/configs" element={<ScoringConfigs />} />
             <Route path="/configs/new" element={<ConfigEditor />} />
             <Route path="/configs/:id" element={<ConfigEditor />} />

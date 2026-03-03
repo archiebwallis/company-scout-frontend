@@ -146,7 +146,7 @@ export default function RunDetail() {
                   <div className="flex items-center gap-2">
                     <CompanyLogo name={company.name} logoDomain={company.logoDomain} size="sm" />
                     <Link to={`/runs/${run.id}/companies/${company.id}`} className="text-primary hover:underline font-medium whitespace-nowrap">{company.name}</Link>
-                    <DataAvailabilityBadge availability={company.dataAvailability} />
+                    <DataAvailabilityBadge availability={company.dataAvailability} coveragePct={company.dataCoveragePct} />
                   </div>
                 </td>
                 <td className="px-4 py-3"><ScoreBadge score={company.totalScore} maxScore={maxScore} /></td>

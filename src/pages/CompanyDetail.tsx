@@ -45,7 +45,7 @@ export default function CompanyDetail() {
         <CompanyLogo name={company.name} logoDomain={company.logoDomain} size="lg" />
         <h1 className="text-2xl font-bold">{company.name}</h1>
         <ScoreBadge score={company.totalScore} maxScore={maxScore} size="lg" />
-        <DataAvailabilityBadge availability={company.dataAvailability} size="md" />
+        <DataAvailabilityBadge availability={company.dataAvailability} coveragePct={company.dataCoveragePct} size="md" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 mb-6">
@@ -87,11 +87,20 @@ export default function CompanyDetail() {
                 )}>
                   {cs.confidence} confidence
                 </span>
-                {cs.dataFound === false && (
+                {cs.dataCoverage != null ? (
+                  <span className={cn(
+                    'text-xs px-1.5 py-0.5 rounded ml-1',
+                    cs.dataCoverage > 80 ? 'bg-score-high/10 text-score-high' :
+                    cs.dataCoverage > 50 ? 'bg-score-mid/10 text-score-mid' :
+                    'bg-score-low/10 text-score-low'
+                  )}>
+                    {cs.dataCoverage}% data
+                  </span>
+                ) : cs.dataFound === false ? (
                   <span className="text-xs px-1.5 py-0.5 rounded bg-score-low/10 text-score-low ml-1">
                     no data
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
           );

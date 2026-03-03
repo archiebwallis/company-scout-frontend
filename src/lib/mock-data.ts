@@ -25,6 +25,7 @@ export interface CriterionScore {
   reasoning: string;
   confidence: 'high' | 'medium' | 'low';
   dataFound?: boolean;
+  dataCoverage?: number;
 }
 
 export interface CompanyResult {
@@ -49,6 +50,7 @@ export interface Run {
   companiesScored: number;
   status: 'pending' | 'running' | 'completed' | 'failed';
   averageScore: number;
+  peFirmName?: string | null;
   companies: CompanyResult[];
 }
 

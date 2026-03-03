@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, SlidersHorizontal, History, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, SlidersHorizontal, History, BarChart3, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/runs/new', icon: PlusCircle, label: 'New Run' },
+  { to: '/firms', icon: Building2, label: 'PE Firms' },
   { to: '/configs', icon: SlidersHorizontal, label: 'Scoring Configs' },
   { to: '/runs', icon: History, label: 'Runs' },
 ];
@@ -15,6 +16,7 @@ export function AppSidebar() {
   const isActive = (to: string) => {
     if (to === '/') return location.pathname === '/';
     if (to === '/runs/new') return location.pathname === '/runs/new';
+    if (to === '/firms') return location.pathname.startsWith('/firms');
     if (to === '/runs') return location.pathname.startsWith('/runs') && location.pathname !== '/runs/new';
     return location.pathname.startsWith(to);
   };
